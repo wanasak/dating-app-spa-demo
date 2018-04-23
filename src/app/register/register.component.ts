@@ -9,7 +9,7 @@ import { AuthService } from '../services/auth.service';
 export class RegisterComponent implements OnInit {
   @Output() cancelRegister = new EventEmitter();
 
-  model: any = {};
+  model: any = { username: '', password: '' };
 
   constructor(private authService: AuthService) {}
 
