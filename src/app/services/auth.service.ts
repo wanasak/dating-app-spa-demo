@@ -4,11 +4,14 @@ import 'rxjs/add/observable/throw';
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { tokenNotExpired, JwtHelper } from 'angular2-jwt';
 
 @Injectable()
 export class AuthService {
   userToken: any;
   baseUrl = 'http://localhost:5000/api/auth/';
+  decodedToken: any;
+  jwtHelper: JwtHelper = new JwtHelper();
 
   constructor(private http: Http) {}
 
@@ -19,6 +22,8 @@ export class AuthService {
         const user = res.json();
         if (user) {
           localStorage.setItem('token', user.tokenString);
+          this.decodedToken = this.jwtHelper.decodeToken(user.tokenString);
+          console.log(this.decodedToken);
           this.userToken = user.tokenString;
         }
       })
@@ -29,6 +34,10 @@ export class AuthService {
     return this.http
       .post(this.baseUrl + 'register', model, this.requestOptions())
       .catch(this.handlerError);
+  }
+
+  loggedIn() {
+    return tokenNotExpired('token');
   }
 
   private requestOptions() {
