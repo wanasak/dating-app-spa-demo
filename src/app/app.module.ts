@@ -1,21 +1,29 @@
+import { MemberListResolver } from './resolvers/member-list.resolver';
+import { MemberDetailResolver } from './resolvers/member-detail.resolver';
+import { AuthModule } from './auth/auth.module';
+import { MemberCardComponent } from './members/member-card/member-card.component';
 import { AuthGuard } from './guards/auth.guard';
-import { appRoutes } from "./routes";
-import { AuthService } from "./services/auth.service";
-import { FormsModule } from "@angular/forms";
-import { HttpModule } from "@angular/http";
-import { BrowserModule } from "@angular/platform-browser";
-import { NgModule } from "@angular/core";
-import { BsDropdownModule } from "ngx-bootstrap";
+import { appRoutes } from './routes';
+import { AuthService } from './services/auth.service';
+import { FormsModule } from '@angular/forms';
+import { HttpModule } from '@angular/http';
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { BsDropdownModule, TabsModule } from 'ngx-bootstrap';
+import { NgxGalleryModule } from 'ngx-gallery';
 
-import { AppComponent } from "./app.component";
+import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
 import { HomeComponent } from './home/home.component';
 import { RegisterComponent } from './register/register.component';
 import { AlertifyService } from './services/alertify.service';
-import { MemberListComponent } from './member-list/member-list.component';
+import { MemberListComponent } from './members/member-list/member-list.component';
 import { MessagesComponent } from './messages/messages.component';
 import { ListsComponent } from './lists/lists.component';
 import { RouterModule } from '@angular/router';
+import { UserService } from './services/user.service';
+import { SharedService } from './services/shared.service';
+import { MemberDetailComponent } from './members/member-detail/member-detail.component';
 
 @NgModule({
   declarations: [
@@ -25,16 +33,29 @@ import { RouterModule } from '@angular/router';
     RegisterComponent,
     MemberListComponent,
     MessagesComponent,
-    ListsComponent
+    ListsComponent,
+    MemberCardComponent,
+    MemberDetailComponent
   ],
   imports: [
+    AuthModule,
     BrowserModule,
     HttpModule,
     FormsModule,
     BsDropdownModule.forRoot(),
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes),
+    TabsModule.forRoot(),
+    NgxGalleryModule
   ],
-  providers: [AuthService, AlertifyService, AuthGuard],
+  providers: [
+    AuthService,
+    AlertifyService,
+    AuthGuard,
+    UserService,
+    SharedService,
+    MemberDetailResolver,
+    MemberListResolver
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

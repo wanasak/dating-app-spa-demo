@@ -5,6 +5,7 @@ import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { tokenNotExpired, JwtHelper } from 'angular2-jwt';
+import { SharedService } from './shared.service';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,7 @@ export class AuthService {
   decodedToken: any;
   jwtHelper: JwtHelper = new JwtHelper();
 
-  constructor(private http: Http) {}
+  constructor(private http: Http, private sharedService: SharedService) {}
 
   login(model: any) {
     return this.http
@@ -27,13 +28,13 @@ export class AuthService {
           this.userToken = user.tokenString;
         }
       })
-      .catch(this.handlerError);
+      .catch(this.sharedService.handlerError);
   }
 
   register(model: any) {
     return this.http
       .post(this.baseUrl + 'register', model, this.requestOptions())
-      .catch(this.handlerError);
+      .catch(this.sharedService.handlerError);
   }
 
   loggedIn() {
@@ -45,24 +46,5 @@ export class AuthService {
       'Content-type': 'application/json'
     });
     return new RequestOptions({ headers: headers });
-  }
-
-  private handlerError(error: any) {
-    const applicationError = error.headers.get('Application-Error');
-    if (applicationError) {
-      return Observable.throw(applicationError);
-    }
-
-    const serverError = error.json();
-    let modelStateError = '';
-    if (serverError) {
-      for (const key in serverError) {
-        if (serverError[key]) {
-          modelStateError += serverError[key] + '\n';
-        }
-      }
-    }
-
-    return Observable.throw(modelStateError || 'Server Error');
   }
 }
