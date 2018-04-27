@@ -4,9 +4,9 @@
       <img src="{{ user.photoUrl }}" alt="{{ user.knownAs}}" />
       <ul class="list-inline member-icons text-center animate">
         <li>
-          <button class="btn btn-primary">
+          <a class="btn btn-primary" [routerLink]="['/members', user.id]">
             <i class="fa fa-user"></i>
-          </button>
+          </a>
         </li>
         <li>
           <button class="btn btn-primary">

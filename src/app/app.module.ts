@@ -1,3 +1,4 @@
+import { PreventUnsaveGuard } from './guards/prevent-unsave.guard';
 import { MemberListResolver } from './resolvers/member-list.resolver';
 import { MemberDetailResolver } from './resolvers/member-detail.resolver';
 import { AuthModule } from './auth/auth.module';
@@ -24,6 +25,8 @@ import { RouterModule } from '@angular/router';
 import { UserService } from './services/user.service';
 import { SharedService } from './services/shared.service';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
+import { MemberEditComponent } from './members/member-edit/member-edit.component';
+import { MemberEditResolver } from './resolvers/member-edit.resolver';
 
 @NgModule({
   declarations: [
@@ -35,7 +38,8 @@ import { MemberDetailComponent } from './members/member-detail/member-detail.com
     MessagesComponent,
     ListsComponent,
     MemberCardComponent,
-    MemberDetailComponent
+    MemberDetailComponent,
+    MemberEditComponent
   ],
   imports: [
     AuthModule,
@@ -54,7 +58,9 @@ import { MemberDetailComponent } from './members/member-detail/member-detail.com
     UserService,
     SharedService,
     MemberDetailResolver,
-    MemberListResolver
+    MemberListResolver,
+    MemberEditResolver,
+    PreventUnsaveGuard
   ],
   bootstrap: [AppComponent]
 })

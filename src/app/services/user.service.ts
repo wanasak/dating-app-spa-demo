@@ -27,4 +27,10 @@ export class UserService {
       .map(res => <User>res.json())
       .catch(this.sharedService.handlerError);
   }
+
+  updateUser(user: User, id: number) {
+    return this.authHttp
+      .put(this.baseUrl + 'users/' + id, user)
+      .catch(this.sharedService.handlerError);
+  }
 }
