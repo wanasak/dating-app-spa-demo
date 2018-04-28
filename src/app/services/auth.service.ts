@@ -1,3 +1,4 @@
+import { User } from './../models/User';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
@@ -6,15 +7,23 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { tokenNotExpired, JwtHelper } from 'angular2-jwt';
 import { SharedService } from './shared.service';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class AuthService {
   userToken: any;
   baseUrl = 'http://localhost:5000/api/auth/';
   decodedToken: any;
+  currentUser: User;
   jwtHelper: JwtHelper = new JwtHelper();
+  private photoUrl = new BehaviorSubject<string>('../../assets/user.png');
+  currentPhotoUrl = this.photoUrl.asObservable();
 
   constructor(private http: Http, private sharedService: SharedService) {}
+
+  changeMemberPhoto(photoUrl: string) {
+    this.photoUrl.next(photoUrl);
+  }
 
   login(model: any) {
     return this.http
@@ -23,9 +32,11 @@ export class AuthService {
         const user = res.json();
         if (user) {
           localStorage.setItem('token', user.tokenString);
+          localStorage.setItem('user', JSON.stringify(user.user));
+          this.currentUser = user.user;
           this.decodedToken = this.jwtHelper.decodeToken(user.tokenString);
-          console.log(this.decodedToken);
           this.userToken = user.tokenString;
+          this.changeMemberPhoto(this.currentUser.photoUrl);
         }
       })
       .catch(this.sharedService.handlerError);

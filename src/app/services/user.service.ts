@@ -12,7 +12,10 @@ import 'rxjs/add/operator/catch';
 export class UserService {
   baseUrl = environment.apiUrl;
 
-  constructor(private authHttp: AuthHttp, private sharedService: SharedService) {}
+  constructor(
+    private authHttp: AuthHttp,
+    private sharedService: SharedService
+  ) {}
 
   getUsers(): Observable<User[]> {
     return this.authHttp
@@ -31,6 +34,18 @@ export class UserService {
   updateUser(user: User, id: number) {
     return this.authHttp
       .put(this.baseUrl + 'users/' + id, user)
+      .catch(this.sharedService.handlerError);
+  }
+
+  setMainPhoto(id: number, userId: number) {
+    return this.authHttp
+      .post(this.baseUrl + 'users/' + userId + '/photos/' + id + '/setMain', {})
+      .catch(this.sharedService.handlerError);
+  }
+
+  deletePhoto(id: number, userId: number) {
+    return this.authHttp
+      .delete(this.baseUrl + 'users/' + userId + '/photos/' + id)
       .catch(this.sharedService.handlerError);
   }
 }

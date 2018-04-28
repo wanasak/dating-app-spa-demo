@@ -1,0 +1,10 @@
+img.thumbnail {
+  height: 100px;
+  width: 100px;
+  margin-bottom: 2px;
+  margin-top: 8px;
+}
+
+.nv-file-over {
+  border: dotted 3px red;
+}

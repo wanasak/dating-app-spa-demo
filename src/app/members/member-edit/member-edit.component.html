@@ -14,7 +14,7 @@
   <div class="row">
     <div class="col-sm-4">
       <div class="panel panel-default">
-        <img alt="{{ user.knownAs }}" class="profile-image thumbnail" src="{{ user.photoUrl }}" />
+        <img alt="{{ user.knownAs }}" class="profile-image thumbnail" src="{{ photoUrl }}" />
         <div class="panel-body">
           <div>
             <strong>Location:</strong>
@@ -61,8 +61,8 @@
             </div>
           </form>
         </tab>
-        <tab heading="Photos">
-          <h4>Photos:</h4>
+        <tab heading="Edit Photos">
+          <app-photo-editor [photos]="user.photos" (memberPhotoChanged)="memberPhoto($event)"></app-photo-editor>
         </tab>
       </tabset>
     </div>
