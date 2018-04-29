@@ -36,15 +36,17 @@ export class AuthService {
           this.currentUser = user.user;
           this.decodedToken = this.jwtHelper.decodeToken(user.tokenString);
           this.userToken = user.tokenString;
-          this.changeMemberPhoto(this.currentUser.photoUrl);
+          if (this.currentUser.photoUrl) {
+            this.changeMemberPhoto(this.currentUser.photoUrl);
+          }
         }
       })
       .catch(this.sharedService.handlerError);
   }
 
-  register(model: any) {
+  register(user: User) {
     return this.http
-      .post(this.baseUrl + 'register', model, this.requestOptions())
+      .post(this.baseUrl + 'register', user, this.requestOptions())
       .catch(this.sharedService.handlerError);
   }
 
