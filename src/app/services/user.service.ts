@@ -18,12 +18,20 @@ export class UserService {
     private sharedService: SharedService
   ) {}
 
-  getUsers(page?: number, itemsPerPage?: number, userParams?: any): Observable<PaginatedResult<User[]>> {
+  getUsers(page?: number, itemsPerPage?: number, userParams?: any, likesParam?: any): Observable<PaginatedResult<User[]>> {
     const paginationResult: PaginatedResult<User[]> = new PaginatedResult<User[]>();
     let queryString = '?';
 
     if (page != null && itemsPerPage != null) {
       queryString += `pageNumber=${page}&pageSize=${itemsPerPage}&`;
+    }
+
+    if (likesParam === 'likers') {
+      queryString += 'likers=true&';
+    }
+
+    if (likesParam === 'likees') {
+      queryString += 'likees=true&';
     }
 
     if (userParams != null) {
@@ -64,6 +72,11 @@ export class UserService {
   setMainPhoto(id: number, userId: number) {
     return this.authHttp
       .post(this.baseUrl + 'users/' + userId + '/photos/' + id + '/setMain', {})
+      .catch(this.sharedService.handlerError);
+  }
+
+  sendLike(id: number, recipientId: number) {
+    return this.authHttp.post(this.baseUrl + 'users/' + id + '/like/' + recipientId, {})
       .catch(this.sharedService.handlerError);
   }
 

@@ -1,3 +1,7 @@
+
+import { AlertifyService } from './../../services/alertify.service';
+import { UserService } from './../../services/user.service';
+import { AuthService } from './../../services/auth.service';
 import { User } from './../../models/User';
 import { Component, OnInit, Input } from '@angular/core';
 
@@ -9,9 +13,20 @@ import { Component, OnInit, Input } from '@angular/core';
 export class MemberCardComponent implements OnInit {
   @Input() user: User;
 
-  constructor() { }
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+    private alertify: AlertifyService
+  ) {}
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  sendLike(id: number) {
+    this.userService.sendLike(this.authService.decodedToken.nameid, id)
+      .subscribe(data => {
+        this.alertify.success('You have like ' + this.user.knownAs);
+      }, error => {
+        this.alertify.error(error);
+      });
   }
-
 }

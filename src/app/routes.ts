@@ -1,3 +1,4 @@
+import { ListsResolver } from './resolvers/lists.resolver';
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
 import { MemberDetailResolver } from './resolvers/member-detail.resolver';
 import { ListsComponent } from './lists/lists.component';
@@ -23,7 +24,7 @@ export const appRoutes: Routes = [
       { path: 'members/edit', component: MemberEditComponent, resolve: { user: MemberEditResolver }, canDeactivate: [PreventUnsaveGuard] },
       { path: 'members/:id', component: MemberDetailComponent, resolve: { user: MemberDetailResolver } },
       { path: 'messages', component: MessagesComponent },
-      { path: 'lists', component: ListsComponent }
+      { path: 'lists', component: ListsComponent, resolve: { users: ListsResolver} }
     ]
   },
   { path: '**', redirectTo: 'home', pathMatch: 'full' }
