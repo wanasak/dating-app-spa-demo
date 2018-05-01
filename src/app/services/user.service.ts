@@ -1,3 +1,4 @@
+import { PaginatedResult } from './../models/pagination';
 import { AuthHttp } from 'angular2-jwt';
 import { SharedService } from './shared.service';
 import { User } from './../models/User';
@@ -17,10 +18,33 @@ export class UserService {
     private sharedService: SharedService
   ) {}
 
-  getUsers(): Observable<User[]> {
+  getUsers(page?: number, itemsPerPage?: number, userParams?: any): Observable<PaginatedResult<User[]>> {
+    const paginationResult: PaginatedResult<User[]> = new PaginatedResult<User[]>();
+    let queryString = '?';
+
+    if (page != null && itemsPerPage != null) {
+      queryString += `pageNumber=${page}&pageSize=${itemsPerPage}&`;
+    }
+
+    if (userParams != null) {
+      queryString +=
+        'minAge=' + userParams.minAge +
+        '&maxAge=' + userParams.maxAge +
+        '&gender=' + userParams.gender +
+        '&orderBy=' + userParams.orderBy;
+    }
+
     return this.authHttp
-      .get(this.baseUrl + 'users')
-      .map(res => <User[]>res.json())
+      .get(this.baseUrl + 'users' + queryString)
+      .map(res => {
+        paginationResult.result = res.json();
+
+        if (res.headers.get('Pagination') != null) {
+          paginationResult.pagination = JSON.parse(res.headers.get('Pagination'));
+        }
+
+        return paginationResult;
+      })
       .catch(this.sharedService.handlerError);
   }
 

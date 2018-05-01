@@ -14,6 +14,9 @@ import 'rxjs/add/operator/catch';
 
 @Injectable()
 export class MemberListResolver implements Resolve<{} | User[]> {
+  pageSize = 5;
+  pageNumber = 1;
+
   constructor(
     private userService: UserService,
     private alertify: AlertifyService,
@@ -21,7 +24,7 @@ export class MemberListResolver implements Resolve<{} | User[]> {
   ) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<{} | User[]> {
-    return this.userService.getUsers().catch(err => {
+    return this.userService.getUsers(this.pageNumber, this.pageSize).catch(err => {
       this.alertify.error(err);
       this.router.navigate(['/home']);
       return Observable.of(null);
