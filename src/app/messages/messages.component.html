@@ -1,3 +1,55 @@
-<p>
-  messages works!
-</p>
+<div class="container">
+  <div class="row">
+    <div class="btn-group">
+      <button class="btn btn-primary" [(ngModel)]="messageContainer" btnRadio="unread" (click)="loadMessages()">
+        <i class="fa fa-envelope"></i> Unread
+      </button>
+      <button class="btn btn-primary" [(ngModel)]="messageContainer" btnRadio="inbox" (click)="loadMessages()">
+        <i class="fa fa-envelope-open"></i> Inbox
+      </button>
+      <button class="btn btn-primary" [(ngModel)]="messageContainer" btnRadio="outbox" (click)="loadMessages()">
+        <i class="fa fa-paper-plane"></i> Outbox
+      </button>
+    </div>
+  </div>
+
+  <br />
+
+  <div class="row" *ngIf="messages.length === 0">
+    <h3>No messages</h3>
+  </div>
+
+  <div class="row" *ngIf="messages.length > 0">
+    <table class="table table-hover">
+      <tr>
+        <th>Message</th>
+        <th>From / To</th>
+        <th>Sent / Received</th>
+        <th>Message</th>
+      </tr>
+      <tr *ngFor="let msg of messages" [routerLink]="['/members', messageContainer == 'outbox' ? msg.recipientId: msg.senderId]" [queryParams]="{tab: '3'}">
+        <td>{{ msg.content }}</td>
+        <td>
+          <div *ngIf="messageContainer != 'outbox'">
+            <img src="{{ msg.senderPhotoUrl}}" class="img-circle" />
+            <strong>{{ msg.senderKnownAs }}</strong>
+          </div>
+          <div *ngIf="messageContainer == 'outbox'">
+            <img src="{{ msg.recipientPhotoUrl}}" class="img-circle" />
+            <strong>{{ msg.recipientKnownAs }}</strong>
+          </div>
+        </td>
+        <td>{{ msg.messageSent | timeAgo }}</td>
+        <td>
+          <button class="btn btn-danger" (click)="$event.stopPropagation()" (click)="deleteMessage(msg.id)">Delete</button>
+        </td>
+      </tr>
+    </table>
+
+    <div class="text-center">
+      <pagination [boundaryLinks]="true" [totalItems]="pagination.totalItems" [itemsPerPage]="pagination.itemsPerPage" [(ngModel)]="pagination.currentPage"
+        (pageChanged)="pageChanged($event)" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;">
+      </pagination>
+    </div>
+  </div>
+</div>
