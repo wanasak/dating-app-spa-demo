@@ -15,7 +15,6 @@ import { NgModule } from '@angular/core';
 import { BsDropdownModule, TabsModule, BsDatepickerModule, ButtonsModule } from 'ngx-bootstrap';
 import { NgxGalleryModule } from 'ngx-gallery';
 import { FileUploadModule } from 'ng2-file-upload';
-import { TimeAgoPipe } from 'time-ago-pipe';
 import { PaginationModule } from 'ngx-bootstrap';
 
 import { AppComponent } from './app.component';
@@ -35,10 +34,16 @@ import { PhotoEditorComponent } from './members/photo-editor/photo-editor.compon
 import { ListsResolver } from './resolvers/lists.resolver';
 import { MessagesResolver } from './resolvers/message.resolver';
 import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
+import { TimeAgoPipe } from './pipes/time-ago.pipe';
 
 export function tokenGetter() {
   return localStorage.getItem('token');
 }
+
+export const jwtConfig = {
+  tokenGetter: tokenGetter,
+  whitelistedDomains: ['localhost:5000']
+};
 
 @NgModule({
   declarations: [
@@ -71,10 +76,7 @@ export function tokenGetter() {
     ButtonsModule.forRoot(),
     HttpClientModule,
     JwtModule.forRoot({
-      config: {
-        tokenGetter: tokenGetter,
-        whitelistedDomains: ['localhost:5000']
-      }
+      config: jwtConfig
     })
   ],
   providers: [

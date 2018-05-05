@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { User } from './../models/User';
 import 'rxjs/add/operator/map';
@@ -12,7 +13,7 @@ import { AuthUser } from '../models/authUser';
 @Injectable()
 export class AuthService {
   userToken: any;
-  baseUrl = 'http://localhost:5000/api/auth/';
+  baseUrl = environment.apiUrl;
   decodedToken: any;
   currentUser: User;
   // jwtHelper: JwtHelper = new JwtHelper();
@@ -27,7 +28,7 @@ export class AuthService {
 
   login(model: any) {
     return this.http
-      .post(this.baseUrl + 'login', model, {
+      .post(this.baseUrl + 'auth/login', model, {
         headers: new HttpHeaders().set('Content-Type', 'application/json')
       })
       .map((user: AuthUser) => {
@@ -46,7 +47,7 @@ export class AuthService {
 
   register(user: User) {
     return this.http
-      .post(this.baseUrl + 'register', user, {
+      .post(this.baseUrl + 'auth/register', user, {
         headers: new HttpHeaders().set('Content-Type', 'application/json')
       });
   }
