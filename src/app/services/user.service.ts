@@ -1,22 +1,19 @@
-import { Message } from "./../models/message";
-import { PaginatedResult } from "./../models/pagination";
-import { AuthHttp } from "angular2-jwt";
-import { SharedService } from "./shared.service";
-import { User } from "./../models/User";
-import { Observable } from "rxjs/Observable";
-import { environment } from "./../../environments/environment";
-import { Http, Response } from "@angular/http";
-import { Injectable } from "@angular/core";
-import "rxjs/add/operator/map";
-import "rxjs/add/operator/catch";
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Message } from './../models/message';
+import { PaginatedResult } from './../models/pagination';
+import { User } from './../models/User';
+import { Observable } from 'rxjs/Observable';
+import { environment } from './../../environments/environment';
+import { Injectable } from '@angular/core';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
 
 @Injectable()
 export class UserService {
   baseUrl = environment.apiUrl;
 
   constructor(
-    private authHttp: AuthHttp,
-    private sharedService: SharedService
+    private authHttp: HttpClient
   ) {}
 
   getUsers(
@@ -28,77 +25,66 @@ export class UserService {
     const paginationResult: PaginatedResult<User[]> = new PaginatedResult<
       User[]
     >();
-    let queryString = "?";
+    let params = new HttpParams();
 
     if (page != null && itemsPerPage != null) {
-      queryString += `pageNumber=${page}&pageSize=${itemsPerPage}&`;
+      params = params.append('pageNumber', page.toString());
+      params = params.append('pageSize', itemsPerPage.toString());
     }
 
-    if (likesParam === "likers") {
-      queryString += "likers=true&";
+    if (likesParam === 'likers') {
+      params = params.append('likers', 'true');
     }
 
-    if (likesParam === "likees") {
-      queryString += "likees=true&";
+    if (likesParam === 'likees') {
+      params = params.append('likees', 'true');
     }
 
     if (userParams != null) {
-      queryString +=
-        "minAge=" +
-        userParams.minAge +
-        "&maxAge=" +
-        userParams.maxAge +
-        "&gender=" +
-        userParams.gender +
-        "&orderBy=" +
-        userParams.orderBy;
+      params = params.append('minAge', userParams.minAge);
+      params = params.append('maxAge', userParams.maxAge);
+      params = params.append('gender', userParams.gender);
+      params = params.append('orderBy', userParams.orderBy);
     }
 
     return this.authHttp
-      .get(this.baseUrl + "users" + queryString)
+      .get<User[]>(this.baseUrl + 'users', { observe: 'response', params })
       .map(res => {
-        paginationResult.result = res.json();
+        paginationResult.result = res.body;
 
-        if (res.headers.get("Pagination") != null) {
+        if (res.headers.get('Pagination') != null) {
           paginationResult.pagination = JSON.parse(
             res.headers.get('Pagination')
           );
         }
 
         return paginationResult;
-      })
-      .catch(this.sharedService.handlerError);
+      });
   }
 
-  getUser(id: number): Observable<User> {
+  getUser(id: number) {
     return this.authHttp
-      .get(this.baseUrl + 'users/' + id)
-      .map(res => <User>res.json())
-      .catch(this.sharedService.handlerError);
+      .get(this.baseUrl + 'users/' + id);
   }
 
   updateUser(user: User, id: number) {
     return this.authHttp
-      .put(this.baseUrl + 'users/' + id, user)
-      .catch(this.sharedService.handlerError);
+      .put(this.baseUrl + 'users/' + id, user);
   }
 
   setMainPhoto(id: number, userId: number) {
     return this.authHttp
-      .post(this.baseUrl + 'users/' + userId + '/photos/' + id + '/setMain', {})
-      .catch(this.sharedService.handlerError);
+      .post(this.baseUrl + 'users/' + userId + '/photos/' + id + '/setMain', {});
   }
 
   sendLike(id: number, recipientId: number) {
     return this.authHttp
-      .post(this.baseUrl + 'users/' + id + '/like/' + recipientId, {})
-      .catch(this.sharedService.handlerError);
+      .post(this.baseUrl + 'users/' + id + '/like/' + recipientId, {});
   }
 
   deletePhoto(id: number, userId: number) {
     return this.authHttp
-      .delete(this.baseUrl + 'users/' + userId + '/photos/' + id)
-      .catch(this.sharedService.handlerError);
+      .delete(this.baseUrl + 'users/' + userId + '/photos/' + id);
   }
 
   getMessages(
@@ -110,16 +96,18 @@ export class UserService {
     const paginationResult: PaginatedResult<Message[]> = new PaginatedResult<
       Message[]
     >();
-    let queryString = '?messageContainer=' + messageContainer;
+    let params = new HttpParams();
+    params = params.append('messageContainer', messageContainer);
 
     if (page != null && itemsPerPage != null) {
-      queryString += '&pageNumber=' + page + '&pageSize=' + itemsPerPage;
+      params = params.append('pageNumber', page.toString());
+      params = params.append('pageSize', itemsPerPage.toString());
     }
 
     return this.authHttp
-      .get(this.baseUrl + 'users/' + id + '/messages' + queryString)
+      .get<Message[]>(this.baseUrl + 'users/' + id + '/messages', { observe: 'response', params })
       .map(res => {
-        paginationResult.result = res.json();
+        paginationResult.result = res.body;
 
         if (res.headers.get('Pagination') != null) {
           paginationResult.pagination = JSON.parse(
@@ -128,33 +116,23 @@ export class UserService {
         }
 
         return paginationResult;
-      })
-      .catch(this.sharedService.handlerError);
+      });
   }
 
   getMessageThread(id: number, recipientId: number) {
     return this.authHttp
-      .get(this.baseUrl + 'users/' + id + '/messages/thread/' + recipientId)
-      .map((res: Response) => {
-        return res.json();
-      })
-      .catch(this.sharedService.handlerError);
+      .get<Message[]>(this.baseUrl + 'users/' + id + '/messages/thread/' + recipientId);
   }
 
   sendMessage(id: number, message: Message) {
     return this.authHttp
-      .post(this.baseUrl + 'users/' + id + '/messages', message)
-      .map((res: Response) => {
-        return res.json();
-      })
-      .catch(this.sharedService.handlerError);
+      .post<Message>(this.baseUrl + 'users/' + id + '/messages', message);
   }
 
   deleteMessage(id: number, userId: number) {
     return this.authHttp
       .post(this.baseUrl + 'users/' + userId + '/messages/' + id, {})
-      .map(res => {})
-      .catch(this.sharedService.handlerError);
+      .map(res => {});
   }
 
   markAsRead(userId: number, messageId: number) {

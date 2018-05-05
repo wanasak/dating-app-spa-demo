@@ -1,7 +1,9 @@
+import { ErrorInterceptorProvider } from './services/error.interceptor';
+import { JwtModule } from '@auth0/angular-jwt';
+import { HttpClientModule } from '@angular/common/http';
 import { PreventUnsaveGuard } from './guards/prevent-unsave.guard';
 import { MemberListResolver } from './resolvers/member-list.resolver';
 import { MemberDetailResolver } from './resolvers/member-detail.resolver';
-import { AuthModule } from './auth/auth.module';
 import { MemberCardComponent } from './members/member-card/member-card.component';
 import { AuthGuard } from './guards/auth.guard';
 import { appRoutes } from './routes';
@@ -26,7 +28,6 @@ import { MessagesComponent } from './messages/messages.component';
 import { ListsComponent } from './lists/lists.component';
 import { RouterModule } from '@angular/router';
 import { UserService } from './services/user.service';
-import { SharedService } from './services/shared.service';
 import { MemberDetailComponent } from './members/member-detail/member-detail.component';
 import { MemberEditComponent } from './members/member-edit/member-edit.component';
 import { MemberEditResolver } from './resolvers/member-edit.resolver';
@@ -34,6 +35,10 @@ import { PhotoEditorComponent } from './members/photo-editor/photo-editor.compon
 import { ListsResolver } from './resolvers/lists.resolver';
 import { MessagesResolver } from './resolvers/message.resolver';
 import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
+
+export function tokenGetter() {
+  return localStorage.getItem('token');
+}
 
 @NgModule({
   declarations: [
@@ -52,7 +57,6 @@ import { MemberMessagesComponent } from './members/member-messages/member-messag
     MemberMessagesComponent
   ],
   imports: [
-    AuthModule,
     BrowserModule,
     HttpModule,
     FormsModule,
@@ -64,20 +68,27 @@ import { MemberMessagesComponent } from './members/member-messages/member-messag
     ReactiveFormsModule,
     BsDatepickerModule.forRoot(),
     PaginationModule.forRoot(),
-    ButtonsModule.forRoot()
+    ButtonsModule.forRoot(),
+    HttpClientModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter,
+        whitelistedDomains: ['localhost:5000']
+      }
+    })
   ],
   providers: [
     AuthService,
     AlertifyService,
     AuthGuard,
     UserService,
-    SharedService,
     MemberDetailResolver,
     MemberListResolver,
     MemberEditResolver,
     PreventUnsaveGuard,
     ListsResolver,
-    MessagesResolver
+    MessagesResolver,
+    ErrorInterceptorProvider
   ],
   bootstrap: [AppComponent]
 })
